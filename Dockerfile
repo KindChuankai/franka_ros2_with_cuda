@@ -37,7 +37,27 @@ RUN groupadd --gid $USER_GID $USERNAME \
 
 USER $USERNAME
 
+# Need to install librealsense2-dkms librealsense2-utils in host system
 WORKDIR /home/$USERNAME/libs
+RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends \
+        apt-transport-https \
+        lsb-release \
+    && sudo mkdir -p /etc/apt/keyrings \
+    && sudo curl -sSf https://librealsense.intel.com/Debian/librealsense.pgp | sudo tee /etc/apt/keyrings/librealsense.pgp > /dev/null \
+    && echo "deb [signed-by=/etc/apt/keyrings/librealsense.pgp] https://librealsense.intel.com/Debian/apt-repo `lsb_release -cs` main" | \
+       sudo tee /etc/apt/sources.list.d/librealsense.list \
+    && sudo apt-get update && sudo apt-get install -y --no-install-recommends \
+        librealsense2-utils \
+        librealsense2-dev \
+        librealsense2-dbg
+
+# RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends \
+#         curl \
+#     && sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list' \
+#     && curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo tee /etc/apt/trusted.gpg.d/ros.asc > /dev/null
+# RUN sudo apt-get update && sudo apt install ros-humble-realsense2-*
+
+
 RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends \
         unzip \
         wget \

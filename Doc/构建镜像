@@ -1,0 +1,16 @@
+#librealsense2_ros2 安装依赖
+rosdep install --from-path src --rosdistro $ROS_DISTRO --skip-keys=librealsense2 -y 
+
+#franka_ros2 安装依赖
+rosdep install --from-paths src --ignore-src --rosdistro humble -y
+
+#可以合并成
+rosdep install --from-paths src --ignore-src --rosdistro humble --skip-keys=librealsense2 -y
+
+colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
+
+
+
+Librealsense直接安装二进制库时需要修改内核，这件事无法在docker中完成，因此需要在宿主机上安装。
+也可以直接在docker中编译安装librealsense2，其会绕过对内核的修改是用另一种方法实现对数据传输的优化，但是效率不如修改内核。
+同时直接编译librealsense2可能会导致对硬件同步等功能的影响。
