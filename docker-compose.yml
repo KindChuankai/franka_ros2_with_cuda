@@ -7,7 +7,8 @@ services:
       args:
         - USER_UID=${USER_UID}
         - USER_GID=${USER_GID}
-    container_name: franka_ros2_with_cuda
+    image: franka_ros2_cuda  
+    container_name: franka_ros2_cuda
     network_mode: "host" # Use host network mode for ROS 2 communication
     privileged: true
     command: /bin/bash
@@ -30,3 +31,8 @@ services:
       rttime: -1
       memlock: 8428281856
     runtime: nvidia # Use NVIDIA runtime for GPU support
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - capabilities: [gpu]

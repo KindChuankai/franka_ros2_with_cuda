@@ -38,7 +38,7 @@ RUN groupadd --gid $USER_GID $USERNAME \
 USER $USERNAME
 
 # Need to install librealsense2-dkms librealsense2-utils in host system
-WORKDIR /home/$USERNAME/libs
+WORKDIR /home/$USERNAME/.local/libs
 RUN sudo apt-get update && sudo apt-get install -y --no-install-recommends \
         apt-transport-https \
         lsb-release \
