@@ -1,0 +1,52 @@
+# -------------------------- matters need attention -------------------------- #
+
+# If you are using NVIDIA in the container, you need to install it on the host machine.
+# You can follow the official guide: 
+https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
+
+
+# about librealsense
+When installing the binary library librealsense2-dkms for Librealsense, the linux kernel needs to be modified.
+This cannot be done in docker, so it needs to be installed on the host machine.
+
+# you can install 
+sudo mkdir -p /etc/apt/keyrings \
+    && sudo curl -sSf https://librealsense.intel.com/Debian/librealsense.pgp | sudo tee /etc/apt/keyrings/librealsense.pgp > /dev/null \
+    && echo "deb [signed-by=/etc/apt/keyrings/librealsense.pgp] https://librealsense.intel.com/Debian/apt-repo `lsb_release -cs` main" | \
+       sudo tee /etc/apt/sources.list.d/librealsense.list \
+    && sudo apt-get update && sudo apt-get install -y --no-install-recommends \
+    librealsense2-dkms
+
+# It is also possible to compile and install librealsense2 directly in docker, which bypasses the need to modify the kernel
+# and achieves data transfer optimization in another way, but the efficiency is not as good as modifying the kernel.
+# At the same time, directly compiling librealsense2 may affect hardware synchronization and other functions.
+
+
+# --------------------------- before docker compose -------------------------- #
+echo -e "USER_UID=$(id -u $USER)\nUSER_GID=$(id -g $USER)" > .env
+
+# ------------------------------ docker compose ------------------------------ #
+# docker create gpu or cpu version of franka_ros2 images
+docker compose -f docker-compose-cpu.yml build
+docker compose -f docker-compose0-gpu.yml build
+# activate container
+docker compose -f docker-compose-cpu.yml up -d
+docker compose -f docker-compose-gpu.yml up -d
+# enter container
+docker exec -it <container_name> /bin/bash
+# exit container
+exit
+
+
+# -------------- after docker compose and in container path /ros2_ws -------------- #
+
+vcs import src < src/franka.repos --recursive --skip-existing
+
+rosdep install --from-paths src --ignore-src --rosdistro $ROS_DISTRO --skip-keys=librealsense2 -y
+
+colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
+
+source install/setpu.bash
+
+
+# -------------------- here ends the installation process -------------------- #

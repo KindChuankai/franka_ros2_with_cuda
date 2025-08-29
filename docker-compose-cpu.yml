@@ -7,8 +7,8 @@ services:
       args:
         - USER_UID=${USER_UID}
         - USER_GID=${USER_GID}
-    image: franka_ros2_cuda
-    container_name: franka_ros2_cuda
+    image: franka_ros2_cpu
+    container_name: franka_ros2_cpu
     network_mode: "host" # Use host network mode for ROS 2 communication
     privileged: true
     command: /bin/bash
@@ -22,17 +22,12 @@ services:
     environment:
       QT_X11_NO_MITSHM: 1
       DISPLAY: $DISPLAY
-      NVIDIA_VISIBLE_DEVICES: all # Use all available GPUs
-      NVIDIA_DRIVER_CAPABILITIES: all # Use all driver capabilities
+      # NVIDIA_VISIBLE_DEVICES: all # Use all available GPUs
+      # NVIDIA_DRIVER_CAPABILITIES: all # Use all driver capabilities
     cap_add:
       - SYS_NICE
     ulimits:
       rtprio: 99
       rttime: -1
       memlock: 8428281856
-    runtime: nvidia # Use NVIDIA runtime for GPU support
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - capabilities: [gpu]
+    # runtime: nvidia # Use NVIDIA runtime for GPU support
