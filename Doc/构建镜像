@@ -18,6 +18,8 @@ sudo mkdir -p /etc/apt/keyrings \
 
 
 ; ---------------------------------------------------------------------------- ;
+echo -e "USER_UID=$(id -u $USER)\nUSER_GID=$(id -g $USER)" > .env
+
 #librealsense2_ros2 安装依赖
 rosdep install --from-path src --rosdistro $ROS_DISTRO --skip-keys=librealsense2 -y 
 
