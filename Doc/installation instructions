@@ -1,7 +1,7 @@
 # -------------------------- matters need attention -------------------------- #
 
 # If you are using NVIDIA in the container, you need to install it on the host machine.
-# You can follow the official guide: 
+# You can follow the official guide:
 https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
 
 
@@ -9,7 +9,7 @@ https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install
 When installing the binary library librealsense2-dkms for Librealsense, the linux kernel needs to be modified.
 This cannot be done in docker, so it needs to be installed on the host machine.
 
-# you can install 
+# you can install
 sudo mkdir -p /etc/apt/keyrings \
     && sudo curl -sSf https://librealsense.intel.com/Debian/librealsense.pgp | sudo tee /etc/apt/keyrings/librealsense.pgp > /dev/null \
     && echo "deb [signed-by=/etc/apt/keyrings/librealsense.pgp] https://librealsense.intel.com/Debian/apt-repo `lsb_release -cs` main" | \
