@@ -1,7 +1,7 @@
 services:
   franka_ros2:
-    image: franka_ros2_cpu_build
-    container_name: franka_ros2_cpu_build
+    image: franka_ros2_gpu_build
+    container_name: franka_ros2_gpu_build
     network_mode: "host" # Use host network mode for ROS 2 communication
     privileged: true
     command: /bin/bash
