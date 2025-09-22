@@ -38,7 +38,7 @@ docker exec -it <container_name> /bin/bash
 exit
 
 
-# -------------- after docker compose and in container path /ros2_ws -------------- #
+# ------------ after docker compose and in container path /ros2_ws ----------- #
 
 vcs import src < src/franka.repos --recursive --skip-existing
 
@@ -47,6 +47,9 @@ rosdep install --from-paths src --ignore-src --rosdistro $ROS_DISTRO --skip-keys
 colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
 
 source install/setpu.bash
+
+# -------------- to check all the franka ros2 pkg configuration -------------- #
+ros2 run xacro xacro /ros2_ws/src/franka_description/robots/fr3/fr3.urdf.xacro -o fr3.urdf ros2_control:=true robot_ip:=172.16.0.2
 
 
 # -------------------- here ends the installation process -------------------- #
