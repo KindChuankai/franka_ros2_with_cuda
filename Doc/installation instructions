@@ -17,9 +17,8 @@ sudo mkdir -p /etc/apt/keyrings \
     && sudo apt-get update && sudo apt-get install -y --no-install-recommends \
     librealsense2-dkms
 
-# It is also possible to compile and install librealsense2 directly in docker, which bypasses the need to modify the kernel
-# and achieves data transfer optimization in another way, but the efficiency is not as good as modifying the kernel.
-# At the same time, directly compiling librealsense2 may affect hardware synchronization and other functions.
+however, you can't install librealsense2-dev in the host machine, because it will conflict with RT kernel.
+so you have to compile and install librealsense2-dev from source code.
 
 
 # --------------------------- before docker compose -------------------------- #
@@ -28,7 +27,7 @@ echo -e "USER_UID=$(id -u $USER)\nUSER_GID=$(id -g $USER)" > .env
 # ------------------------------ docker compose ------------------------------ #
 # docker create gpu or cpu version of franka_ros2 images
 docker compose -f docker-compose-cpu.yml build
-docker compose -f docker-compose0-gpu.yml build
+docker compose -f docker-compose-gpu.yml build
 # activate container
 docker compose -f docker-compose-cpu.yml up -d
 docker compose -f docker-compose-gpu.yml up -d
@@ -42,11 +41,31 @@ exit
 
 vcs import src < src/franka.repos --recursive --skip-existing
 
-rosdep install --from-paths src --ignore-src --rosdistro $ROS_DISTRO --skip-keys=librealsense2 -y
-
 colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
 
 source install/setpu.bash
+
+# ----- if something wrong with franka_semantic_description, you can try: ---- #
+modify the package.xml of franka_semantic_description, add dependencies controller_interface:
+<depend>rclcpp</depend>
+  <depend>franka_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>hardware_interface</depend>
+  <depend>controller_interface</depend> # add
+  <depend>franka_hardware</depend>
+
+modify the CMakeLists.txt of franka_semantic_description, add dependencies controller_interface:
+set(THIS_PACKAGE_INCLUDE_DEPENDS
+    Franka
+    franka_hardware
+    franka_msgs
+    geometry_msgs
+    sensor_msgs
+    hardware_interface
+    controller_interface
+    rclcpp_lifecycle
+    urdf)
 
 # -------------- to check all the franka ros2 pkg configuration -------------- #
 ros2 run xacro xacro /ros2_ws/src/franka_description/robots/fr3/fr3.urdf.xacro -o fr3.urdf ros2_control:=true robot_ip:=172.16.0.2
